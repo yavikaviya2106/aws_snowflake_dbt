@@ -1,0 +1,33 @@
+WITH base AS (
+    SELECT * 
+    FROM {{ref('int_bookings_revenue')}} 
+)
+SELECT
+    HOST_ID,
+    HOST_NAME,
+    CITY,
+    COUNTRY,
+    HOST_TENURE_TIER, 
+    RESPONSE_TIER,
+
+    QUARTER_NUM,
+    QUARTER_NAME,
+    YEAR_NUM,
+    MONTH_NUM,
+    MONTH_NAME,
+
+      -- volume
+    COUNT(BOOKING_ID)               AS TOTAL_BOOKINGs,
+    COUNT(DISTINCT LISTING_ID)   AS ACTIVE_LISTINGS,
+
+    -- revenue
+    SUM(TOTAL_REVENUE)              AS TOTAL_REVENUE,
+
+    -- averages
+    ROUND(avg(TOTAL_REVENUE), 2)    AS AVG_REVENUE_PER_BOOKING,
+    ROUND(AVG(NIGHTS_BOOKED), 2)    AS AVG_STAY_LENGTH,
+    ROUND(AVG(AVG_NIGHT_RATE), 2) AS AVG_NIGHT_RATE,
+
+
+FROM base
+GROUP BY 1,2,3,4,5,6,7,8,9,10,11

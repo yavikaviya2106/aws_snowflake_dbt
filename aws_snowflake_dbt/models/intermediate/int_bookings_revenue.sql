@@ -1,0 +1,63 @@
+SELECT
+    
+    BOOKING_ID,
+    LISTING_ID,
+    HOST_ID,
+    DATE_ID,
+
+    HOST_NAME,
+    IS_SUPERHOST,
+    HOST_TENURE_TIER, 
+    RESPONSE_TIER,
+
+    BOOKING_DATE,
+    NIGHTS_BOOKED,
+
+    CITY,
+    COUNTRY,
+    PROPERTY_TYPE,
+    ROOM_TYPE,
+    PRICE_TIER,
+    CAPACITY_TIER,
+    BEDROOM_CATEGORY,
+    
+    PRICE_PER_NIGHT,
+    BOOKING_AMOUNT,
+    CLEANING_FEE,
+    SERVICE_FEE,
+    TOTAL_REVENUE,
+    
+    DAY_OF_WEEK_NAME,
+    MONTH_NUM,
+    MONTH_NAME,
+    QUARTER_NUM,
+    QUARTER_NAME,
+    YEAR_NUM,
+    IS_WEEKEND,
+
+    
+    -- Derived KPIs
+    BOOKING_AMOUNT / NULLIF(NIGHTS_BOOKED, 0)        AS AVG_REVENUE_PER_NIGHT,
+    PRICE_PER_NIGHT * NIGHTS_BOOKED                  AS EXPECTED_REVENUE,
+    BOOKING_AMOUNT - (PRICE_PER_NIGHT * NIGHTS_BOOKED) AS REVENUE_VARIANCE,
+    DATEDIFF('day', BOOKING_DATE, CURRENT_DATE)   AS DAYS_SINCE_LISTED,
+
+    ROUND(CLEANING_FEE  / NULLIF(TOTAL_REVENUE, 0) * 100, 2) AS CLEANING_FEE_PCT,
+    ROUND(SERVICE_FEE   / NULLIF(TOTAL_REVENUE, 0) * 100, 2) AS SERVICE_FEE_PCT,
+
+        -- nightly rate actually charged vs listed price
+    ROUND(BOOKING_AMOUNT / NULLIF(NIGHTS_BOOKED, 0), 2)  AS AVG_NIGHT_RATE,
+        
+    ROUND(PRICE_PER_NIGHT - (BOOKING_AMOUNT
+              / NULLIF(NIGHTS_BOOKED, 0)), 2)     AS RATE_VS_LISTED,
+
+        -- stay length bucket
+        CASE
+            WHEN NIGHTS_BOOKED = 1        THEN '1 Night'
+            WHEN NIGHTS_BOOKED <= 3       THEN '2-3 Nights'
+            WHEN NIGHTS_BOOKED <= 7       THEN '4-7 Nights'
+            ELSE  '8+ Nights'
+        end AS STAY_LENGTH
+
+FROM {{ ref('obt_airbnb') }}
+

@@ -1,0 +1,46 @@
+WITH base AS (
+    SELECT * 
+    FROM {{ref('int_bookings_revenue')}} 
+)
+
+
+SELECT
+    LISTING_ID,
+    CITY,
+    COUNTRY,
+    PROPERTY_TYPE,
+    ROOM_TYPE,
+    PRICE_TIER,
+    CAPACITY_TIER,
+    BEDROOM_CATEGORY,
+    
+    QUARTER_NUM,
+    QUARTER_NAME,
+    YEAR_NUM,
+    MONTH_NUM,
+    MONTH_NAME,
+
+    -- volume
+    COUNT(BOOKING_ID)               AS TOTAL_BOOKINGs,
+    SUM(NIGHTS_BOOKED)              AS TOTAL_NIGHTS,
+
+    -- revenue
+    SUM(TOTAL_REVENUE)              AS TOTAL_REVENUE,
+    SUM(BOOKING_amount)             AS TOTAL_BOOKING_amount,
+    SUM(CLEANING_FEE)               AS TOTAL_CLEANING_FEE,
+    SUM(SERVICE_FEE)                AS TOTAL_SERVICE_FEE,
+
+    -- averages
+    ROUND(avg(TOTAL_REVENUE), 2)    AS AVG_REVENUE_PER_BOOKING,
+    ROUND(AVG(NIGHTS_BOOKED), 2)    AS AVG_STAY_LENGTH,
+    ROUND(AVG(AVG_NIGHT_RATE), 2) AS AVG_NIGHT_RATE,
+
+    -- weekend split
+    COUNT(CASE WHEN IS_WEEKEND THEN 1 END) AS WEEKEND_BOOKINGs,
+    COUNT(CASE WHEN NOT IS_WEEKEND THEN 1 END) AS WEEKDAY_BOOKINGs
+    
+
+FROM base
+GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13
+
+

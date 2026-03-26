@@ -1,0 +1,48 @@
+WITH source AS (
+    SELECT * FROM {{ref('stg_listings')}}
+),
+
+final AS(
+
+SELECT
+LISTING_ID,
+HOST_ID,
+PROPERTY_TYPE,
+ROOM_TYPE,
+CITY,
+COUNTRY,
+ACCOMMODATES,
+BEDROOMS,
+BATHROOMS,
+PRICE_PER_NIGHT,
+
+CASE
+    WHEN ACCOMMODATES = 1 THEN 'Solo-Guest'
+    WHEN ACCOMMODATES BETWEEN 2 AND 5 THEN 'Small-Group'
+    ELSE 'Large-Group'
+    END AS CAPACITY_TIER,
+
+CASE  
+    WHEN BEDROOMS = 1 THEN 'Studio'
+    WHEN BEDROOMS = 2 THEN 'Single-bed'
+    WHEN BEDROOMS = 3 THEN 'Double-beds'
+    ELSE 'Multi-Beds'
+    END AS BEDROOM_CATEGORY,
+
+CASE  
+    WHEN PRICE_PER_NIGHT < 50 THEN 'Budget'
+    WHEN PRICE_PER_NIGHT < 150  THEN 'Mid-Range'
+    WHEN PRICE_PER_NIGHT < 300 THEN 'Premium'
+    ELSE 'Luxury'
+    END AS PRICE_TIER,
+
+
+
+CREATED_AT
+
+FROM source
+ORDER BY LISTING_ID
+
+)
+
+SELECT * FROM final

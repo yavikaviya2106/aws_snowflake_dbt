@@ -1,0 +1,22 @@
+sources:
+  - name: source
+    database: airbnb_dbt  
+    schema: source 
+    tables:
+      - name: bookings
+        loaded_at_field : created_at
+        freshness:
+            warn_after : {count : 24, period : hour}
+            error_after : {count : 48, period : hour}
+      - name: hosts
+        loaded_at_field : created_at
+        freshness:
+            warn_after : {count : 24, period : hour}
+            error_after : {count : 48, period : hour}
+      - name: listings
+        loaded_at_field : created_at
+        freshness:
+            warn_after : {count : 24, period : hour}
+            error_after : {count : 48, period : hour}
+
+  

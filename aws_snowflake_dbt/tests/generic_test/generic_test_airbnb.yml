@@ -1,0 +1,105 @@
+models:
+  - name: fct_bookings
+    columns:
+      - name: booking_id
+        data_tests:
+          - unique
+          - not_null
+
+      - name: booking_status
+        data_tests:
+          - accepted_values:
+              arguments: # available in v1.10.5 and higher. Older versions can set the <argument_name> as the top-level property.
+                values: ['CONFIRMED', 'CANCELLED']
+
+      - name: listing_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_listings')
+                field: listing_id
+
+      - name: date_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id
+
+      - name: nights_booked
+        data_tests:
+          - not_null
+
+      - name: booking_amount
+        data_tests:
+          - not_null
+
+      - name: created_at
+        data_tests:
+          - not_null
+        
+
+  - name: dim_listings
+    columns:
+      - name: listing_id
+        data_tests:
+          - unique
+          - not_null
+      - name: host_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_hosts')
+                field: host_id
+
+      - name: price_per_night
+        data_tests:
+          - not_null
+
+      - name: accommodates
+        data_tests:
+          - not_null
+
+      - name: created_at
+        data_tests:
+          - not_null
+    
+  - name: dim_hosts
+    columns:
+      - name: host_id
+        data_tests:
+          - unique
+          - not_null
+    
+      - name: is_superhost
+        data_tests:
+          - accepted_values:
+              arguments: # available in v1.10.5 and higher. Older versions can set the <argument_name> as the top-level property.
+                values: [TRUE,FALSE]
+      
+      - name: response_rate
+        data_tests:
+          - not_null
+
+      - name: created_at
+        data_tests:
+          - not_null
+    
+  - name: dim_date
+    columns:
+      - name: date_id
+        tests:
+          - unique
+          - not_null
+      - name: full_date
+        tests:
+          - unique
+          - not_null
+      - name: month_num
+        tests:
+          - accepted_values:
+              arguments:
+                values: [1,2,3,4,5,6,7,8,9,10,11,12]
+       
